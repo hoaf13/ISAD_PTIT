@@ -1,0 +1,51 @@
+{% extends 'manager_app/base.html' %}
+
+{% block static_extension %}
+
+{% endblock static_extension %}
+
+
+{% block content %}
+{% load static %}
+<div class="container pt-3 pb-3">
+    <div class="action-items d-flex" style="justify-content: space-between; width: 100%;">
+        <a href="{% url 'workspace-create-manager-view' %}"><div class="btn btn-primary"> Thêm 1 Công Việc</div></a>    
+        <a href="workspace-add-user-view/"><div class="btn btn-primary"> Thành Viên tham gia Workspace</div></a>    
+        <a href="{% url 'workspace-create-manager-view' %}"><div class="btn btn-danger"> Xóa workspace {{workspace_name}} </div></a>    
+    </div>
+    
+
+    <br><br><br>
+    <div class="row text-center">
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên Công Việc</th>
+                        <th>Trạng Thái</th>
+                        <th>Thời Gian Tạo</th>
+                        <th>No. Comment</th>
+                        <th>No. Issue</th>                     
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for workspace in workspaces %}
+                    <tr>
+                        <td>{{workspace.id}}</td>
+                        <td><a href="{% url 'workspace-list-manager-view' %}{{workspace.id}}" style="text-decoration: none;">{{workspace.name}}</a></td>
+                        <td> {{workspace.created_at|date:'H:i - d/m/Y'}} </td>
+                        <td> {{workspace.tag}} </td>                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>        
+
+
+
+
+</div>
+
+{% endblock content %}

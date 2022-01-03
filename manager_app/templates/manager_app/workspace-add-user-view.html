@@ -1,0 +1,54 @@
+{% extends 'manager_app/base.html' %}
+
+{% block static_extension %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form-workspace-create.css' %}" type="text/css" />
+{% endblock static_extension %}
+
+
+{% block content %}
+<div class="container pt-3 pb-3">
+
+  <div class="topnav">
+    <div class="d-flex" style="justify-content: space-between;"> 
+    <div class="search-area" >
+      <input type="text" placeholder="Search..">
+      <div class="btn btn-primary"> Tìm </div>
+    </div>
+    <div class="btn btn-primary"> Cập Nhật </div>
+    
+  </div>
+    
+  </div>
+
+  <br><br><br>
+    <div class="row text-center">
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Trạng Thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in staffs %}
+                    <tr>
+                        
+                        <td> {{user.id}}</td>
+                        <td> {{user.username}}</a></td>
+                        <td> {{user.email}} </td>
+                        <td> <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"> </td>                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>        
+
+
+</div>
+
+{% endblock content %}

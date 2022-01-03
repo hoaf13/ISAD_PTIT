@@ -1,0 +1,19 @@
+.field-name{
+    color: red;
+    font-size: large;
+    font-weight: bold;
+}
+
+.field-error{
+    color: blueviolet;
+    font-size: large;
+}
+
+.form-input{
+    width: 100%;
+}
+
+.errorlist{
+    color: red;
+    font-weight: bolder;
+}
