@@ -10,4 +10,16 @@ class WorkspaceCreateForm(forms.ModelForm):
         'tag': forms.Textarea(attrs={'rows':3, 'cols':60}),
       }
     
-
+GEEKS_CHOICES =(
+    ("1", "One"),
+    ("2", "Two"),
+    ("3", "Three"),
+    ("4", "Four"),
+    ("5", "Five"),
+)
+class SearchTaskForm(forms.Form):
+    start_date  = forms.DateField(help_text="Enter a date between now and 4 weeks (default 3).")
+    due_date = forms.DateField(help_text="Enter a date between now and 4 weeks (default 3).")
+    status = forms.ChoiceField(
+      choices = GEEKS_CHOICES
+    )

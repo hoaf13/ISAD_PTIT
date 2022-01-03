@@ -4,12 +4,12 @@ from django.http import HttpResponse
 # Create your views here.
 from db_app.models import StaffWorkspaceModel, WorkspaceModel
 
-from .forms import WorkspaceCreateForm
+from .forms import WorkspaceCreateForm, SearchTaskForm
 
 from django.contrib.auth.models import User
-import redis
+# import redis
 
-red = redis.StrictRedis(host='localhost', port=6379)
+# red = redis.StrictRedis(host='localhost', port=6379)
 
 class WorkspaceListView(View):
 
@@ -80,3 +80,47 @@ class WorkspaceAddUserUpdateView(View):
         if staff_workspace:
             StaffWorkspaceModel.objects.delete(staff_workspace)
         return redirect('workspace-add-user-update-view')
+
+
+class WorkspaceStatisticView(View):
+    def get(self, request, workspace_id):
+        workspace_name = WorkspaceModel.objects.get(id=workspace_id).name
+        print("heeeee")
+        print(request.POST.__dict__)
+        context={
+            "user": request.user,
+            "page_name": f"Thống kê {workspace_name}",
+            "tasks":[{ 'index':1,  'name':'FE design','start_date':'02/05/2021','due_date':'03/06/2021',
+                        'members':[{'name':'tuenguyen','url':'https://bootdey.com/img/Content/avatar/avatar1.png'},{'name':'long kun','url':'https://bootdey.com/img/Content/avatar/avatar3.png'}, ],
+                        'progress':100,'status':'completed'},
+                    {   'index':2,'name':'DB design','start_date':'02/02/2022','due_date':'03/04/2022',
+                        'members':[{'name':'tuenguyen','url':'https://bootdey.com/img/Content/avatar/avatar1.png'},{'name':'hoa kun','url':'https://bootdey.com/img/Content/avatar/avatar2.png'}, ],
+                        'progress':20,'status':'doing'}
+                    ],
+            "total":2,
+            "pending":1,
+            'completed':1,
+            'forms':SearchTaskForm()
+        }
+        return render(request, template_name='manager_app/workspace-statistics-view.html', context=context)
+
+    def post(self, request, workspace_id):
+        workspace_name = WorkspaceModel.objects.get(id=workspace_id).name
+        print("heeeee post")
+        print(dir(request.POST), request.POST.get("start_date"))
+        context={
+            "user": request.user,
+            "page_name": f"Thống kê {workspace_name}",
+            "tasks":[{ 'index':1,  'name':'FE design','start_date':'02/05/2021','due_date':'03/06/2021',
+                        'members':[{'name':'tuenguyen','url':'https://bootdey.com/img/Content/avatar/avatar1.png'},{'name':'long kun','url':'https://bootdey.com/img/Content/avatar/avatar3.png'}, ],
+                        'progress':100,'status':'completed'},
+                    {   'index':2,'name':'DB design','start_date':'02/02/2022','due_date':'03/04/2022',
+                        'members':[{'name':'tuenguyen','url':'https://bootdey.com/img/Content/avatar/avatar1.png'},{'name':'hoa kun','url':'https://bootdey.com/img/Content/avatar/avatar2.png'}, ],
+                        'progress':20,'status':'doing'}
+                    ],
+            "total":2,
+            "pending":1,
+            'completed':1,
+            'forms':SearchTaskForm()
+        }
+        return render(request, template_name='manager_app/workspace-statistics-view.html', context=context)
