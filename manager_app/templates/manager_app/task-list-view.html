@@ -9,14 +9,50 @@
 {% load static %}
 <div class="container pt-3 pb-3">
     <div class="action-items d-flex" style="justify-content: space-between; width: 100%;">
-        <a href="{% url 'workspace-create-manager-view' %}"><div class="btn btn-primary"> Thêm 1 Công Việc</div></a>    
+        <a href="task-create-view/"><div class="btn btn-primary"> Thêm 1 Công Việc</div></a>    
         <a href="workspace-add-user-view/"><div class="btn btn-primary"> Thành Viên tham gia Workspace</div></a>    
         <a href="{% url 'workspace-create-manager-view' %}"><div class="btn btn-danger"> Xóa workspace {{workspace_name}} </div></a> 
         <a href="workspace-statistics-view/"><div class="btn btn-danger"> thông kê {{workspace_name}} </div></a>      
+        <a href="workspace-delete-view/"><div class="btn btn-danger"> Xóa workspace {{workspace_name}} </div></a>    
     </div>
     
+    
+    {% for key, value in clusters.items %}
+        <br><br><br>
+        <h3>{{key}}</h3>        
+        <div class="row text-center">
+            <div class="col-12">
+                <table class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên Công Việc</th>
+                            <th>Trạng Thái</th>
+                            <th>Thời Gian Tạo</th>
+                            <th>Thời Dự Kiến Hoàn Thành</th>           
+                            <th>Nhân Viên Phụ Trách</th>           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in value %}
+                        <tr>
+                            <td>{{task.id}}</td>
+                            <td> <a href=""> {{task.name}} </a></td>
+                            <td>{{task.status}}</td>
+                            <td>{{task.created_at|date:'d/m/Y'}}</td>
+                            <td>{{task.due_at|date:'d/m/Y'}} </td>
+                            <td>{{task.staff_workspace.staff.get_full_name}} </td>                        
+                        </tr>
+                        {% endfor %}                        
+                    </tbody>
+                </table>
+            </div>
+        </div>        
+        <!-- <h2>{{value}}</h2> -->
+    {% endfor %}
 
-    <br><br><br>
+    
+    <!-- <br><br><br>
     <div class="row text-center">
         <div class="col-12">
             <table class="table table-striped">
@@ -26,25 +62,27 @@
                         <th>Tên Công Việc</th>
                         <th>Trạng Thái</th>
                         <th>Thời Gian Tạo</th>
-                        <th>No. Comment</th>
-                        <th>No. Issue</th>                     
+                        <th>Thời Dự Kiến Hoàn Thành</th>           
+                        <th>Nhân Viên Phụ Trách</th>           
                     </tr>
                 </thead>
                 <tbody>
-                    {% for workspace in workspaces %}
+                    {% for task in tasks %}
                     <tr>
-                        <td>{{workspace.id}}</td>
-                        <td><a href="{% url 'workspace-list-manager-view' %}{{workspace.id}}" style="text-decoration: none;">{{workspace.name}}</a></td>
-                        <td> {{workspace.created_at|date:'H:i - d/m/Y'}} </td>
-                        <td> {{workspace.tag}} </td>                        
+                        <td>{{task.id}}</td>
+                        <td> <a href=""> {{task.name}} </a></td>
+                        <td>{{task.status}}</td>
+                        <td>{{task.created_at|date:'d/m/Y'}}</td>
+                        <td>{{task.due_at|date:'d/m/Y'}} </td>
+                        <td>{{task.staff_workspace.staff.get_full_name}} </td>                        
                     </tr>
                     {% endfor %}
+                    
                 </tbody>
             </table>
         </div>
     </div>        
-
-
+ -->
 
 
 </div>

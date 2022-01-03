@@ -18,7 +18,7 @@
       </div>
       
         
-        <div class="btn btn-warning"> Quay Lại </div>
+        <a href="/manager/workspace-list-view/{{workspace_id}}/"><div class="btn btn-warning"> Quay Lại </div></a>
     </div>
   </div>
 
@@ -36,12 +36,19 @@
                 </thead>
                 
                 <tbody>
-                    {% for user in staffs %}
+                    {% for staff in staffs %}
                     <tr>    
-                        <td> {{user.id}}</td>
-                        <td> {{user.username}}</a></td>
-                        <td> {{user.email}} </td>
-                        <td>  <a href='{{user.username}}/workspace-add-user-update-view/'> ok </a> </td> 
+                        <td> {{staff.id}}</td>
+                        <td> {{staff.username}}</a></td>
+                        <td> {{staff.email}} </td>
+                        <td> 
+                            {% if staff.status == True %}
+                                <span class="staff-status" style="color: green; font-weight: bolder;"> {{staff.status}} </span>
+                            {% else %}
+                                <span class="staff-status" style="color: red; font-weight: bolder;"> {{staff.status}} </span>
+                            {% endif %}
+                            <a href='{{staff.username}}/workspace-add-user-update-view/'> <img src="{% static 'img/change.png' %}" alt="change_symbols" style="width: 20px; height: 20px;"> </a> 
+                        </td>                         
                     </tr>
                     {% endfor %}
                 </tbody>
