@@ -11,6 +11,7 @@
     <div class="action-items d-flex" style="justify-content: space-between; width: 100%;">
         <a href="task-create-view/"><div class="btn btn-primary"> Thêm 1 Công Việc</div></a>    
         <a href="workspace-add-user-view/"><div class="btn btn-primary"> Thành Viên tham gia Workspace</div></a>    
+        <a href="workspace-add-user-view/"><div class="btn btn-primary"> Xem Thống Kê </div></a>    
         <a href="workspace-delete-view/"><div class="btn btn-danger"> Xóa workspace {{workspace_name}} </div></a>    
     </div>
     
@@ -35,8 +36,18 @@
                         {% for task in value %}
                         <tr>
                             <td>{{task.id}}</td>
-                            <td> <a href=""> {{task.name}} </a></td>
-                            <td>{{task.status}}</td>
+                            <td> <a href="/manager/workspace-list-view/{{workspace_id}}/{{task.id}}/"> {{task.name}} </a></td>                        
+                            <td>
+                                {% if task.status == "chưa xác nhận" %}
+                                    <span class="staff-status" style="color: red; font-weight: bolder;"> {{task.status}} </span>
+                                {% elif task.status == "đang xử lý" %}
+                                    <span class="staff-status" style="color: yellow; font-weight: bolder;"> {{task.status}} </span>
+                                {% elif task.status == "đã hoàn thành" %}
+                                    <span class="staff-status" style="color: green; font-weight: bolder;"> {{task.status}} </span>
+                                {% else %}
+                                    <span class="staff-status" style="color: darkgreen; font-weight: bolder;"> {{task.status}} </span>
+                                {% endif %}
+                            </td>
                             <td>{{task.created_at|date:'d/m/Y'}}</td>
                             <td>{{task.due_at|date:'d/m/Y'}} </td>
                             <td>{{task.staff_workspace.staff.get_full_name}} </td>                        
@@ -46,43 +57,9 @@
                 </table>
             </div>
         </div>        
-        <!-- <h2>{{value}}</h2> -->
     {% endfor %}
 
     
-    <!-- <br><br><br>
-    <div class="row text-center">
-        <div class="col-12">
-            <table class="table table-striped">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên Công Việc</th>
-                        <th>Trạng Thái</th>
-                        <th>Thời Gian Tạo</th>
-                        <th>Thời Dự Kiến Hoàn Thành</th>           
-                        <th>Nhân Viên Phụ Trách</th>           
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for task in tasks %}
-                    <tr>
-                        <td>{{task.id}}</td>
-                        <td> <a href=""> {{task.name}} </a></td>
-                        <td>{{task.status}}</td>
-                        <td>{{task.created_at|date:'d/m/Y'}}</td>
-                        <td>{{task.due_at|date:'d/m/Y'}} </td>
-                        <td>{{task.staff_workspace.staff.get_full_name}} </td>                        
-                    </tr>
-                    {% endfor %}
-                    
-                </tbody>
-            </table>
-        </div>
-    </div>        
- -->
-
-
 </div>
 
 {% endblock content %}

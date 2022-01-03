@@ -48,7 +48,11 @@ class TaskModel(models.Model):
 class EvaluationModel(models.Model):
     description = models.TextField(max_length=2000)
     created_at = models.DateTimeField(auto_now_add=True)
+    point = models.IntegerField(null=True)
+    task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, null=True)
     """id to TaskModel"""
+    def __str__(self) -> str:
+        return f"{self.id}.{self.description} - {self.task}"
 
 """ Issue trong công việc """
 class IssueModel(models.Model):
