@@ -2,12 +2,14 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.http import HttpResponse
 # Create your views here.
-from db_app.models import WorkspaceModel
+from db_app.models import StaffWorkspaceModel, WorkspaceModel
 
 from .forms import WorkspaceCreateForm
 
 from django.contrib.auth.models import User
+import redis
 
+red = redis.StrictRedis(host='localhost', port=6379)
 
 class WorkspaceListView(View):
 
@@ -67,3 +69,14 @@ class WorkspaceAddUserView(View):
         }
         return render(request, template_name='manager_app/workspace-add-user-view.html', context=context)
         
+class WorkspaceAddUserUpdateView(View):
+    def get(self, request, workspace_id, username):
+        print("hello !!!")
+        staff_workspace = StaffWorkspaceModel.objects.filter(
+            # workspace__id__contains=workspace_id,
+            staff__username__contains=username
+        )
+        print("-----------------------",staff_workspace)
+        if staff_workspace:
+            StaffWorkspaceModel.objects.delete(staff_workspace)
+        return redirect('workspace-add-user-update-view')

@@ -15,11 +15,11 @@ class WorkspaceModel(models.Model):
         return f"{self.id}. {self.name}"
 
 
-"""Tham chiếu Nhân Viên và Dự Án"""
+"""Thêm Nhân Viên vào Dự Án"""
 class StaffWorkspaceModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    worskspace = models.ForeignKey(WorkspaceModel,on_delete=models.CASCADE)
-    staff = models.ForeignKey(User,on_delete=models.CASCADE)
+    worskspace = models.ForeignKey(WorkspaceModel,on_delete=models.CASCADE, default=0)
+    staff = models.ForeignKey(User,on_delete=models.CASCADE, default=0)
     """id to WorkspaceModel"""
     """id to UserModel"""
 
@@ -35,7 +35,7 @@ class TaskModel(models.Model):
     # đang xử lý
     # đã hoàn thành     
     # đóng task 
-    staff_workspace = models.ForeignKey(StaffWorkspaceModel, on_delete=models.CASCADE)
+    staff_workspace = models.ForeignKey(StaffWorkspaceModel, on_delete=models.CASCADE, default=0)
     """id to StaffWorkspaceModel"""
 
 """ Đánh giá công việc """

@@ -1,5 +1,5 @@
 from django import forms
-from db_app.models import WorkspaceModel
+from db_app.models import WorkspaceModel, StaffWorkspaceModel
 
 class WorkspaceCreateForm(forms.ModelForm):
   class Meta:
@@ -10,4 +10,4 @@ class WorkspaceCreateForm(forms.ModelForm):
         'tag': forms.Textarea(attrs={'rows':3, 'cols':60}),
       }
     
-    
+
