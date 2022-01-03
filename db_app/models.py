@@ -18,10 +18,13 @@ class WorkspaceModel(models.Model):
 """Thêm Nhân Viên vào Dự Án"""
 class StaffWorkspaceModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    worskspace = models.ForeignKey(WorkspaceModel,on_delete=models.CASCADE, default=0)
+    workspace = models.ForeignKey(WorkspaceModel,on_delete=models.CASCADE, default=0)
     staff = models.ForeignKey(User,on_delete=models.CASCADE, default=0)
     """id to WorkspaceModel"""
     """id to UserModel"""
+    
+    def __str__(self) -> str:
+        return f"{self.staff} - {self.workspace.name}"
 
 """Công việc"""
 class TaskModel(models.Model):
@@ -38,6 +41,9 @@ class TaskModel(models.Model):
     staff_workspace = models.ForeignKey(StaffWorkspaceModel, on_delete=models.CASCADE, default=0)
     """id to StaffWorkspaceModel"""
 
+    def __str__(self):
+        return f"{self.id}.{self.name} - {self.staff_workspace.staff.username}"
+    
 """ Đánh giá công việc """
 class EvaluationModel(models.Model):
     description = models.TextField(max_length=2000)

@@ -29,6 +29,7 @@ ALLOWED_HOSTS = ["*"]
 
 LOGIN_REDIRECT_URL = '/validate'
 LOGOUT_REDIRECT_URL = '/login' 
+DATE_INPUT_FORMATS = ['%d-%m-%Y']
 
 # Application definition
 
