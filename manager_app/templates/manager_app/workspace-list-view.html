@@ -8,7 +8,15 @@
 {% block content %}
 {% load static %}
 <div class="container pt-3 pb-3">
-    <a href="{% url 'workspace-create-manager-view' %}"><div class="btn btn-primary"> Tạo workspace </div></a>
+
+    <div class="d-flex" style="justify-content: space-between;">
+        <div class="search-area">
+            <input type="text" placeholder="Search..">
+            <div class="btn btn-primary"> Tìm </div>
+        </div>
+        <a href="{% url 'workspace-create-manager-view' %}"><div class="btn btn-primary"> Tạo workspace </div></a>
+    </div>
+
     <br><br><br>
     <div class="row text-center">
         <div class="col-12">
