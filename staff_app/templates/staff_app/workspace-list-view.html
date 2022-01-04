@@ -1,0 +1,46 @@
+{% extends 'manager_app/base.html' %}
+
+{% block static_extension %}
+
+{% endblock static_extension %}
+
+
+{% block content %}
+{% load static %}
+<div class="container pt-3 pb-3">
+    <a href="{% url 'workspace-create-manager-view' %}"><div class="btn btn-primary"> Tạo workspace </div></a>
+    <br><br><br>
+    <div class="row text-center">
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Created at</th>
+                        <th>Tag</th>
+                        <th>Creator</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for workspace in workspaces %}
+                    <tr>
+                        <td>{{workspace.id}}</td>
+                        <td><a href="{% url 'workspace-list-manager-view' %}{{workspace.id}}" style="text-decoration: none;">{{workspace.name}}</a></td>
+                        <td> {{workspace.created_at|date:'H:i - d/m/Y'}} </td>
+                        <td> {{workspace.tag}} </td>                        
+                        <td> {{workspace.user.username}} </td>                        
+                    </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>        
+
+
+
+
+</div>
+
+{% endblock content %}

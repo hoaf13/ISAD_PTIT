@@ -20,7 +20,6 @@ class WorkspaceListView(View):
             "user": request.user,
             "page_name": "Danh sách Workspaces"
         }        
-        print(request.user)
         return render(request, template_name='manager_app/workspace-list-view.html', context=context)
 
 
