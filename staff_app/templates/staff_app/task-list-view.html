@@ -10,12 +10,8 @@
 
 <div class="container pt-3 pb-3">
     <div class="action-items d-flex" style="justify-content: space-between; width: 100%;">
-        <a href="task-create-view/"><div class="btn btn-primary"> Thêm 1 Công Việc</div></a>    
-        <a href="workspace-add-user-view/"><div class="btn btn-primary"> Thành Viên tham gia Workspace</div></a>    
-        <a href="{% url 'workspace-create-manager-view' %}"><div class="btn btn-danger"> Xóa workspace {{workspace_name}} </div></a> 
-        <a href="workspace-statistics-view/"><div class="btn btn-danger"> thông kê {{workspace_name}} </div></a>      
-        <a href="workspace-add-user-view/"><div class="btn btn-primary"> Xem Thống Kê </div></a>    
-        <a href="workspace-delete-view/"><div class="btn btn-danger"> Xóa workspace {{workspace_name}} </div></a>    
+        <a href="/workspace-add-user-view/"><div class="btn btn-primary"> Xem Thống Kê </div></a>    
+        <a href="/staff/workspace-list-view/"><div class="btn btn-warning"> Quay Lại </div></a>    
     </div>
 
     <br><br><br>
@@ -25,8 +21,6 @@
             <div class="btn btn-primary"> Tìm </div>
         </div>
     </div>
-    
-    
     
     {% for key, value in clusters.items %}
         <br><br><br>
@@ -48,17 +42,25 @@
                         {% for task in value %}
                         <tr>
                             <td>{{task.id}}</td>
-                            <td> <a href="/manager/workspace-list-view/{{workspace_id}}/{{task.id}}/"> {{task.name}} </a></td>                        
+                            <td> <a href="/staff/workspace-list-view/{{workspace_id}}/{{task.id}}/"> {{task.name}} </a></td>                        
                             <td>
+                                
+                                <span class="left-symbol">
+                                    <a href="{{task.id}}/left"><img src="{% static 'img/left.jpg' %}" alt="left" style="width: 20px; height: 20px;"></a>
+                                </span>
                                 {% if task.status == "chưa xác nhận" %}
                                     <span class="staff-status" style="color: red; font-weight: bolder;"> {{task.status}} </span>
                                 {% elif task.status == "đang xử lý" %}
-                                    <span class="staff-status" style="color: darkgoldenrod; font-weight: bolder;"> {{task.status}} </span>
+                                    <span class="staff-status" style="color: darkorange; font-weight: bolder;"> {{task.status}} </span>
                                 {% elif task.status == "đã hoàn thành" %}
                                     <span class="staff-status" style="color: green; font-weight: bolder;"> {{task.status}} </span>
                                 {% else %}
                                     <span class="staff-status" style="color: darkgreen; font-weight: bolder;"> {{task.status}} </span>
                                 {% endif %}
+                                <span class="right-symbol">
+                                    <a href="{{task.id}}/right"><img src="{% static 'img/right.jpg' %}" alt="right" style="width: 20px; height: 20px;"></a>
+                                </span>
+
                             </td>
                             <td>{{task.created_at|date:'d/m/Y'}}</td>
                             <td>{{task.due_at|date:'d/m/Y'}} </td>

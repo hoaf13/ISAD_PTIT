@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.http import HttpResponse
 # Create your views here.
-from db_app.models import StaffWorkspaceModel, TaskModel, WorkspaceModel
+from db_app.models import EvaluationModel, StaffWorkspaceModel, TaskModel, WorkspaceModel
 
 from .forms import WorkspaceCreateForm, SearchTaskForm
 
@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from datetime  import datetime, time
 # red = redis.StrictRedis(host='localhost', port=6379)
 from .forms import WorkspaceCreateForm, TaskForm
+from .forms import EvaluationForm, WorkspaceCreateForm, TaskForm
 
 from django.contrib.auth.models import User
 
@@ -26,7 +27,6 @@ class WorkspaceListView(View):
             "user": request.user,
             "page_name": "Danh sách Workspaces"
         }        
-        print(request.user)
         return render(request, template_name='manager_app/workspace-list-view.html', context=context)
 
 
@@ -76,7 +76,7 @@ class TaskListView(View):
         print(clusters)
         context = {
             "clusters":clusters,
-            "tasks": tasks,
+            "workspace_id": workspace_id,
             "workspace_name": workspace_name,
             "user": request.user,
             "page_name": f"Danh Sách Công Việc trong {workspace_name}"
@@ -296,29 +296,73 @@ class TaskCreateView(View):
 
     def post(self, request, workspace_id):
         # tạo TaskModel
-        username = request.POST['staff_workspace']
-        staff_workspace = StaffWorkspaceModel.objects.filter(workspace__pk=workspace_id, staff=User.objects.filter(username=username)[0])[0]
-        print(staff_workspace)
-        form = WorkspaceCreateForm(
-            {
-                'name':request.POST['name'],
-                'tag':request.POST['tag'],
-                'due_at':request.POST['due_at'], 
-                'description': request.POST['description'],
-                'status': 'chưa xác nhận',
-                'staff_workspace': request.POST['staff_workspace']
-            }   
-        )
+        usernames = request.POST.getlist('staff_workspace')
+        print("username: ", usernames)
+        for username in usernames:
+            staff_workspace = StaffWorkspaceModel.objects.filter(workspace__pk=workspace_id, staff=User.objects.filter(username=username)[0])[0]
+            print(staff_workspace)
+            form = WorkspaceCreateForm(
+                {
+                    'name':request.POST['name'],
+                    'tag':request.POST['tag'],
+                    'due_at':request.POST['due_at'], 
+                    'description': request.POST['description'],
+                    'status': 'chưa xác nhận',
+                    'staff_workspace': request.POST['staff_workspace']
+                }   
+            )
 
-        date_time_obj = datetime.strptime(request.POST['due_at'], '%d/%m/%Y')
-        instances = TaskModel.objects.create(
-            name=request.POST['name'],
-            tag=request.POST['tag'],
-            due_at=date_time_obj,
-            description=request.POST['description'],
-            status='chưa xác nhận',
-            staff_workspace=staff_workspace
+            date_time_obj = datetime.strptime(request.POST['due_at'], '%d/%m/%Y')
+            instances = TaskModel.objects.create(
+                name=request.POST['name'],
+                tag=request.POST['tag'],
+                due_at=date_time_obj,
+                description=request.POST['description'],
+                status='chưa xác nhận',
+                staff_workspace=staff_workspace
+            )
+            instances.save()
+        return redirect(f'/manager/workspace-list-view/{workspace_id}/')
+
+
+class DetailTaskView(View):
+    def get(self ,request, workspace_id, task_id):
+        workspace_name = WorkspaceModel.objects.get(id=workspace_id).name
+        task = TaskModel.objects.get(id=task_id)
+        evaluations = EvaluationModel.objects.filter(task__pk=task_id)
+        print("evaluations: ", evaluations)
+        form = EvaluationForm()
+        context = {
+            "form": form,
+            "task": task,
+            "evaluations": evaluations,
+            "workspace_name":workspace_name,
+            "user": request.user,
+            "page_name": f"Đánh giá công việc {task.name}"
+        }
+        return render(request, template_name='manager_app/task-detail-view.html', context=context)
+
+    def post(self, request, workspace_id, task_id):
+        task = TaskModel.objects.get(id=task_id)
+        form = EvaluationForm({
+                'description':request.POST['description'],
+                'point':request.POST['point'],
+                'task':task
+            }
         )
+<<<<<<< HEAD
         instances.save()
         return redirect(f'/manager/workspace-list-view/{workspace_id}/')
         
+=======
+        if form.is_valid():
+            instance = EvaluationModel.objects.create(
+                description=request.POST['description'],
+                point=int(request.POST['point']),
+                task=task
+            )
+            instance.save()
+        else:
+            print(form.errors)
+        return redirect(f'/manager/workspace-list-view/{workspace_id}/{task_id}/')
+>>>>>>> 6503d489f8f3dc426f26a84438c60db66a8ddaf1

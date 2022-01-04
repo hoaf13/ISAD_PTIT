@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 from .views import WorkspaceListView, WorkspaceCreateView, TaskListView, WorkspaceAddUserView, WorkspaceAddUserUpdateView, WorkspaceStatisticView
 from .views import WorkspaceListView, WorkspaceCreateView, TaskListView, WorkspaceAddUserView, WorkspaceAddUserUpdateView, WorkspaceDeleteView, TaskCreateView
+from .views import DetailTaskView, WorkspaceListView, WorkspaceCreateView, TaskListView, WorkspaceAddUserView, WorkspaceAddUserUpdateView, WorkspaceDeleteView, TaskCreateView
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
@@ -18,7 +19,8 @@ urlpatterns = [
     path('workspace-list-view/<int:workspace_id>/workspace-statistics-view/', login_required(WorkspaceStatisticView.as_view(),login_url='login-view')),
     # action - thêm người vào workspace
     path('workspace-list-view/<int:workspace_id>/workspace-add-user-view/<str:username>/workspace-add-user-update-view/', login_required(WorkspaceAddUserUpdateView.as_view(),login_url='login-view'), name='workspace-add-user-update-view'),
-
     # view - tạo công việc 
     path('workspace-list-view/<int:workspace_id>/task-create-view/', login_required(TaskCreateView.as_view(),login_url='login-view'), name='task-create-view'),
+    # view - hiển thị chi tiết công việc (bao gồm đánh giá)
+    path('workspace-list-view/<int:workspace_id>/<int:task_id>/',login_required(DetailTaskView.as_view(), login_url='login-view'), name='task-detail-view')
 ]

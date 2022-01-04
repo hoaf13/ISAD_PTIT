@@ -1,0 +1,76 @@
+{% extends 'manager_app/base.html' %}
+
+{% block static_extension %}
+
+{% endblock static_extension %}
+
+
+{% block content %}
+{% load static %}
+
+<div class="container pt-3 pb-3">
+
+
+    <div class="col" style="margin-left: 5%;">
+        <div class="container-fluid">
+            <h3>Thông tin Công Việc</h3>
+            <table class="table table-testcase">
+                <thead class="table-dark">
+                  <tr>
+                    <th scope="col" style="width: 200px;">Field</th>
+                    <th scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <form action="." method="post">
+                    {% csrf_token %}
+                    <tr class="record"> <td style="font-weight: bold;">Tên Công Việc</td> <td style="width: 100px;">{{task.name}}</td></tr>
+                    <tr class="record"> <td style="font-weight: bold;">Tag</td> <td><div style="overflow:hidden"> {{task.tag}} </div></td></tr>
+                    <tr class="record"> <td style="font-weight: bold;">Thời gian tạo (m/d/Y)</td> <td><div style="overflow:hidden"> {{task.created_at|date:'d/m/Y'}} </div></td></tr>
+                    <tr class="record"> <td style="font-weight: bold;">Thời hạn hoàn thành (m/d/Y)</td> <td><div style="overflow:hidden"> {{task.due_at|date:'d/m/Y'}} </div></td></tr>
+                    <tr class="record"> <td style="font-weight: bold;">Mô tả công việc</td> <td><div> {{task.description}} </div></td></tr>
+                    <tr class="record"> <td style="font-weight: bold;">Người phụ trách</td> <td><div> {{task.staff_workspace.staff.get_full_name}} </div></td></tr>
+                    <tr class="record"> <td style="font-weight: bold;">Trạng Thái</td> 
+                        <td><div>                         
+                            {% if task.status == "chưa xác nhận" %}
+                                <span class="staff-status" style="color: red; font-weight: bolder;"> {{task.status}} </span>
+                            {% elif task.status == "đang xử lý" %}
+                                <span class="staff-status" style="color: yellow; font-weight: bolder;"> {{task.status}} </span>
+                            {% elif task.status == "đã hoàn thành" %}
+                                <span class="staff-status" style="color: green; font-weight: bolder;"> {{task.status}} </span>
+                            {% else %}
+                                <span class="staff-status" style="color: darkgreen; font-weight: bolder;"> {{task.status}} </span>
+                            {% endif %}
+                        </div></td>
+                    </tr>
+                </tbody> 
+            </table>
+            
+            <br><br><br>
+            <h3>Các Lần Đánh Giá</h3>
+            {% if evaluations|length > 0 %}
+                {% for evaluation in evaluations %}
+                    {{evaluation.created_at|date:'H:m:s --- d/m/Y'}} - point: {{evaluation.point}} - {{evaluation.description}}  
+                    <br>
+                {% endfor %}
+            {% else %}
+                <h6>Chưa có đánh giá nào.</h6>
+            {% endif %}
+
+            <br><br><br>
+            <h3>Đánh Giá</h3>
+            {{form.as_p}}
+            
+            <br>
+            <div class="row" style="margin-bottom: 200px;">
+              <div class="col" style="text-align: center;"><input class="btn btn-primary" style="font-size: x-large;" type="submit" value="Đánh Giá"> </div>
+                  </form>
+              <div class="col" style="text-align: center;"><a href="/manager/workspace-list-view/{{workspace_id}}/"><button class="btn btn-danger" style="font-size: x-large;" id="btn-return"> Bỏ Qua </button></a></div>
+            </div>
+        </div>
+    </div> <!--end col-->
+
+
+</div>
+
+{% endblock content %}
