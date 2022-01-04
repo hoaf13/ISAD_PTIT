@@ -8,13 +8,13 @@ from .forms import WorkspaceCreateForm, SearchTaskForm
 
 from django.contrib.auth.models import User
 # import redis
-
+from datetime  import datetime, time
 # red = redis.StrictRedis(host='localhost', port=6379)
 from .forms import WorkspaceCreateForm, TaskForm
 
 from django.contrib.auth.models import User
 
-from datetime import datetime
+from datetime import datetime, date
 
 
 class WorkspaceListView(View):
@@ -124,51 +124,150 @@ class WorkspaceStatisticView(View):
         workspace_name = WorkspaceModel.objects.get(id=workspace_id).name
         print("heeeee")
         print(request.POST.__dict__)
+        tasks = TaskModel.objects.all()
+        task_views = {}
+        for index,t in enumerate(tasks):
+            # print(dir(t))
+            
+            if t.name not in task_views:
+                progress=0# đang xử lý
+    # đã hoàn thành     
+    # đóng task 
+                if str(t.status) == 'chưa xác nhận':
+                    progress = 0
+                    # print("headads")
+                if str(t.status)  == 'đang xử  lý':
+                    progress = 50
+                if str(t.status)  == 'đã hoàn thành':
+                    progress = 100
+                elif str(t.status)  == 'đóng task':
+                    progress = 100
+                print(t.created_at.date() > date(2022,1,1), t.created_at.date())
+                value = {
+                    'index':index,
+                    'name':t.name,
+                    'start_date':t.created_at.date(),
+                    'due_date':t.due_at.date(),
+                    'description':t.description,
+                    'status':t.status,
+                    'members':[
+                        {   'name':t.staff_workspace.staff.username,
+                            'url':f'https://bootdey.com/img/Content/avatar/avatar{t.staff_workspace.staff.id}.png'}
+                        ],
+                    'progress':progress
+                }
+                task_views[t.name] = value
+            else:
+                task_views[t.name]['member'].append(t.staff_workspace.staff)
+        task_views = list(task_views.values())
+        for v,i in enumerate(task_views):task_views[v]['index'] = v
+        pending = 0
+        for t in task_views:
+            if str(t['status'])  == 'chưa xác nhận' or str(t['status'])  == 'đang xử  lý':pending += 1
+        completed = 0
+        for t in task_views:
+            if str(t['status'])   == 'đóng task' or str(t['status'])   == 'đã hoàn thành':completed += 1
+        # print(task_views)
         context={
             "user": request.user,
             "page_name": f"Thống kê {workspace_name}",
-            "tasks":[{ 'index':1,  'name':'FE design','start_date':'02/05/2021','due_date':'03/06/2021',
-                        'members':[{'name':'tuenguyen','url':'https://bootdey.com/img/Content/avatar/avatar1.png'},{'name':'long kun','url':'https://bootdey.com/img/Content/avatar/avatar3.png'}, ],
-                        'progress':100,'status':'completed'},
-                    {   'index':2,'name':'DB design','start_date':'02/02/2022','due_date':'03/04/2022',
-                        'members':[{'name':'tuenguyen','url':'https://bootdey.com/img/Content/avatar/avatar1.png'},{'name':'hoa kun','url':'https://bootdey.com/img/Content/avatar/avatar2.png'}, ],
-                        'progress':20,'status':'doing'}
-                    ],
-            "total":2,
-            "pending":1,
-            'completed':1,
+            "tasks":task_views,
+            "total":len(task_views),
+            "pending":pending,
+            'completed':completed,
             'forms':SearchTaskForm()
         }
         return render(request, template_name='manager_app/workspace-statistics-view.html', context=context)
-
+    def filter_by_start_date(self,task_view, date):
+        return [i for i in task_view if date <= i['start_date']]
+    def filter_by_due_date(self,task_view, date):
+        return [i for i in task_view if date <= i['due_date']]
+    def filter_by_status(self, task_view, status):
+        return [i for i in task_view if status in i['status']]
+    def filter_by_name(self, task_view, name):
+        def check(i, name):
+            for j in i['members']:
+                print(j)
+                if name in j['name']:return True
+            return False
+        return [i for i in task_view if check(i,name)]
     def post(self, request, workspace_id):
         workspace_name = WorkspaceModel.objects.get(id=workspace_id).name
         print("heeeee post")
         print(dir(request.POST), request.POST.get("start_date"))
+
+        tasks = TaskModel.objects.all()
+        task_views = {}
+        for index,t in enumerate(tasks):
+            # print(dir(t))
+            
+            if t.name not in task_views:
+                progress=0# đang xử lý
+    # đã hoàn thành     
+    # đóng task 
+                if str(t.status) == 'chưa xác nhận':
+                    progress = 0
+                    # print("headads")
+                if str(t.status)  == 'đang xử  lý':
+                    progress = 50
+                if str(t.status)  == 'đã hoàn thành':
+                    progress = 100
+                elif str(t.status)  == 'đóng task':
+                    progress = 100
+                # print(dir(t.created_at))
+                value = {
+                    'index':index,
+                    'name':t.name,
+                    'start_date':t.created_at.date(),
+                    'due_date':t.due_at.date(),
+                    'description':t.description,
+                    'status':t.status,
+                    'members':[
+                        {   'name':t.staff_workspace.staff.username,
+                            'url':f'https://bootdey.com/img/Content/avatar/avatar{t.staff_workspace.staff.id}.png'}
+                        ],
+                    'progress':progress
+                }
+                task_views[t.name] = value
+            else:
+                task_views[t.name]['member'].append(t.staff_workspace.staff)
+        task_views = list(task_views.values())
+        for v,i in enumerate(task_views):task_views[v]['index'] = v
+
+
+        pending = 0
+        for t in task_views:
+            if str(t['status'])  == 'chưa xác nhận' or str(t['status'])  == 'đang xử  lý':pending += 1
+        completed = 0
+        for t in task_views:
+            if str(t['status'])   == 'đóng task' or str(t['status'])   == 'đã hoàn thành':completed += 1
+        # print(task_views)
+        if request.POST.get("start_date") != "":
+            start_date = request.POST.get("start_date").split("/")
+            start_date = date(start_date[2], start_date[1], start_date[0])
+            start_date = [int(i) for i in start_date]
+            task_views = self.filter_by_start_date(task_views, start_date)
+        if request.POST.get("due_date") != "":
+            due_date = request.POST.get("due_date").split("/")
+            due_date = [int(i) for i in due_date]
+            due_date = date(due_date[2], due_date[1], due_date[0])
+            print(due_date)
+            task_views = self.filter_by_due_date(task_views, due_date)
+        if request.POST.get("staff") !="":
+            name = request.POST.get("staff")
+            print(name)
+            task_views = self.filter_by_name(task_views, name)
         context={
             "user": request.user,
             "page_name": f"Thống kê {workspace_name}",
-            "tasks":[{ 'index':1,  'name':'FE design','start_date':'02/05/2021','due_date':'03/06/2021',
-                        'members':[{'name':'tuenguyen','url':'https://bootdey.com/img/Content/avatar/avatar1.png'},{'name':'long kun','url':'https://bootdey.com/img/Content/avatar/avatar3.png'}, ],
-                        'progress':100,'status':'completed'},
-                    {   'index':2,'name':'DB design','start_date':'02/02/2022','due_date':'03/04/2022',
-                        'members':[{'name':'tuenguyen','url':'https://bootdey.com/img/Content/avatar/avatar1.png'},{'name':'hoa kun','url':'https://bootdey.com/img/Content/avatar/avatar2.png'}, ],
-                        'progress':20,'status':'doing'}
-                    ],
-            "total":2,
-            "pending":1,
-            'completed':1,
+            "tasks":task_views,
+            "total":len(task_views),
+            "pending":pending,
+            'completed':completed,
             'forms':SearchTaskForm()
         }
         return render(request, template_name='manager_app/workspace-statistics-view.html', context=context)
-        if len(staff_workspace):            
-            staff_workspace.delete()
-            print("delete successfull !")
-        else:
-            instance = StaffWorkspaceModel.objects.create(workspace=WorkspaceModel.objects.get(id=workspace_id),staff=User.objects.filter(username=username)[0])
-            instance.save()
-            print("create successfull !")
-        return redirect(f'/manager/workspace-list-view/{workspace_id}/workspace-add-user-view/')
+        
 
 
 class WorkspaceDeleteView(View):

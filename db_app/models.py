@@ -48,6 +48,7 @@ class TaskModel(models.Model):
 class EvaluationModel(models.Model):
     description = models.TextField(max_length=2000)
     created_at = models.DateTimeField(auto_now_add=True)
+    point = models.IntegerField(null=True)
     """id to TaskModel"""
 
 """ Issue trong công việc """
