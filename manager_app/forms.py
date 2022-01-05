@@ -36,12 +36,7 @@ class TaskForm(forms.ModelForm):
         'description': forms.Textarea(attrs={'rows':3, 'cols':60}),
       }
     
-      'name': forms.Textarea(attrs={'rows':3, 'cols':60}),
-      'tag': forms.Textarea(attrs={'rows':3, 'cols':60}),
-      'due_at': forms.DateInput(format='%d/%m/%Y'),
-      'description': forms.Textarea(attrs={'rows':3, 'cols':60}),
-      'staff_workspace': forms.widgets.CheckboxSelectMultiple
-    }
+    
     
 class EvaluationForm(forms.ModelForm):
   class Meta:

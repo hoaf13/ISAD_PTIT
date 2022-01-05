@@ -128,7 +128,7 @@ class WorkspaceStatisticView(View):
         task_views = {}
         for index,t in enumerate(tasks):
             # print(dir(t))
-            
+            print(t.status)
             if t.name not in task_views:
                 progress=0# đang xử lý
     # đã hoàn thành     
@@ -140,7 +140,7 @@ class WorkspaceStatisticView(View):
                     progress = 50
                 if str(t.status)  == 'đã hoàn thành':
                     progress = 100
-                elif str(t.status)  == 'đóng task':
+                elif str(t.status)  == 'đóng':
                     progress = 100
                 print(t.created_at.date() > date(2022,1,1), t.created_at.date())
                 value = {
@@ -158,7 +158,7 @@ class WorkspaceStatisticView(View):
                 }
                 task_views[t.name] = value
             else:
-                task_views[t.name]['member'].append(t.staff_workspace.staff)
+                task_views[t.name]['members'].append(t.staff_workspace.staff)
         task_views = list(task_views.values())
         for v,i in enumerate(task_views):task_views[v]['index'] = v
         pending = 0
@@ -166,7 +166,7 @@ class WorkspaceStatisticView(View):
             if str(t['status'])  == 'chưa xác nhận' or str(t['status'])  == 'đang xử  lý':pending += 1
         completed = 0
         for t in task_views:
-            if str(t['status'])   == 'đóng task' or str(t['status'])   == 'đã hoàn thành':completed += 1
+            if str(t['status'])   == 'đóng' or str(t['status'])   == 'đã hoàn thành':completed += 1
         # print(task_views)
         context={
             "user": request.user,
@@ -178,13 +178,24 @@ class WorkspaceStatisticView(View):
             'forms':SearchTaskForm()
         }
         return render(request, template_name='manager_app/workspace-statistics-view.html', context=context)
-    def filter_by_start_date(self,task_view, date):
-        return [i for i in task_view if date <= i['start_date']]
-    def filter_by_due_date(self,task_view, date):
-        return [i for i in task_view if date <= i['due_date']]
+    def filter_by_start_date(self,task_view, datex, on):
+        if on == 'on':
+            print("here")
+            return [i for i in task_view if datex <= i['start_date']]
+        else:
+            return [i for i in task_view if datex >= i['start_date']]
+    def filter_by_due_date(self,task_view, datex, on):
+        if on == 'on':
+            # for i in task_view:print(i['due_date'], i['due_date'] >= date)
+            return [i for i in task_view if datex <= i['due_date']]
+        else:
+            return [i for i in task_view if datex >= i['due_date']]
     def filter_by_status(self, task_view, status):
+        status = status.strip()
+        print("status")
         return [i for i in task_view if status in i['status']]
     def filter_by_name(self, task_view, name):
+        name = name.strip()
         def check(i, name):
             for j in i['members']:
                 print(j)
@@ -194,7 +205,7 @@ class WorkspaceStatisticView(View):
     def post(self, request, workspace_id):
         workspace_name = WorkspaceModel.objects.get(id=workspace_id).name
         print("heeeee post")
-        print(dir(request.POST), request.POST.get("start_date"))
+        print(dir(request.POST), request.POST.get("start_date_op"))
 
         tasks = TaskModel.objects.all()
         task_views = {}
@@ -212,7 +223,7 @@ class WorkspaceStatisticView(View):
                     progress = 50
                 if str(t.status)  == 'đã hoàn thành':
                     progress = 100
-                elif str(t.status)  == 'đóng task':
+                elif str(t.status)  == 'đóng':
                     progress = 100
                 # print(dir(t.created_at))
                 value = {
@@ -230,33 +241,41 @@ class WorkspaceStatisticView(View):
                 }
                 task_views[t.name] = value
             else:
-                task_views[t.name]['member'].append(t.staff_workspace.staff)
+                task_views[t.name]['members'].append(t.staff_workspace.staff)
         task_views = list(task_views.values())
         for v,i in enumerate(task_views):task_views[v]['index'] = v
 
 
+        
+        # print(task_views)
+        if request.POST.get("start_date") != "":
+            on = request.POST.get("start_date_op","off")
+            start_date = request.POST.get("start_date").split("/")
+            start_date = [int(i) for i in start_date]
+            start_date = date(start_date[2], start_date[1], start_date[0])
+            
+            task_views = self.filter_by_start_date(task_views, start_date, on)
+        if request.POST.get("due_date") != "":
+            on = request.POST.get("due_date_op","off")
+            due_date = request.POST.get("due_date").split("/")
+            due_date = [int(i) for i in due_date]
+            due_date = date(due_date[2], due_date[1], due_date[0])
+            # print(due_date)
+            task_views = self.filter_by_due_date(task_views, due_date, on)
+        if request.POST.get("staff") !="":
+            name = request.POST.get("staff")
+            print(name)
+            task_views = self.filter_by_name(task_views, name)
+        if request.POST.get("status") !="":
+            name = request.POST.get("status")
+            print(name)
+            task_views = self.filter_by_status(task_views, name)
         pending = 0
         for t in task_views:
             if str(t['status'])  == 'chưa xác nhận' or str(t['status'])  == 'đang xử  lý':pending += 1
         completed = 0
         for t in task_views:
-            if str(t['status'])   == 'đóng task' or str(t['status'])   == 'đã hoàn thành':completed += 1
-        # print(task_views)
-        if request.POST.get("start_date") != "":
-            start_date = request.POST.get("start_date").split("/")
-            start_date = date(start_date[2], start_date[1], start_date[0])
-            start_date = [int(i) for i in start_date]
-            task_views = self.filter_by_start_date(task_views, start_date)
-        if request.POST.get("due_date") != "":
-            due_date = request.POST.get("due_date").split("/")
-            due_date = [int(i) for i in due_date]
-            due_date = date(due_date[2], due_date[1], due_date[0])
-            print(due_date)
-            task_views = self.filter_by_due_date(task_views, due_date)
-        if request.POST.get("staff") !="":
-            name = request.POST.get("staff")
-            print(name)
-            task_views = self.filter_by_name(task_views, name)
+            if str(t['status'])   == 'đóng' or str(t['status'])   == 'đã hoàn thành':completed += 1
         context={
             "user": request.user,
             "page_name": f"Thống kê {workspace_name}",
@@ -350,11 +369,9 @@ class DetailTaskView(View):
                 'task':task
             }
         )
-<<<<<<< HEAD
         instances.save()
         return redirect(f'/manager/workspace-list-view/{workspace_id}/')
         
-=======
         if form.is_valid():
             instance = EvaluationModel.objects.create(
                 description=request.POST['description'],
@@ -365,4 +382,3 @@ class DetailTaskView(View):
         else:
             print(form.errors)
         return redirect(f'/manager/workspace-list-view/{workspace_id}/{task_id}/')
->>>>>>> 6503d489f8f3dc426f26a84438c60db66a8ddaf1
